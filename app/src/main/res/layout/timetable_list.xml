@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Definig a container for you List Item-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center_vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/subjectlist"
+    android:orientation="horizontal">
+
+    <!-- Defining where should text be placed. You set you text color here-->
+    <TextView
+        android:id="@+id/list_content"
+        android:textColor="#000000"
+        android:text="sample"
+        android:textSize="18sp"
+        android:paddingLeft="20dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+    <TextView
+        android:id="@+id/list_content2"
+        android:textColor="#000000"
+        android:text="sample2"
+        android:textSize="18sp"
+        android:paddingLeft="20dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:background="@drawable/subjectlist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+    <TextView
+        android:id="@+id/list_content3"
+        android:textColor="#000000"
+        android:text="sample3"
+        android:textSize="18sp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="10dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:background="@drawable/subjectlist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+</LinearLayout>

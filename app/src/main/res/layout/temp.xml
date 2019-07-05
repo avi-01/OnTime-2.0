@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.avnis.ontime.TimeTable"
+    android:background="@drawable/list">
+
+    <HorizontalScrollView
+        android:layout_marginBottom="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/horizontalScrollView"
+        android:layout_alignParentTop="true"
+        android:scrollbars="none"
+        android:layout_alignParentStart="true">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/horizontalScrollView"
+            android:layout_alignParentStart="true">
+
+            <Button
+                android:textColor="#FCF6F5FF"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="7dp"
+                android:paddingBottom="10dp"
+                android:layout_marginRight="1dp"
+                android:layout_marginLeft="0dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/day"
+                android:text="Monday"
+                android:id="@+id/button4" />
+
+            <Button
+                android:textColor="#FCF6F5FF"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="7dp"
+                android:paddingBottom="10dp"
+                android:layout_marginRight="1dp"
+                android:layout_marginLeft="0dp"
+                android:background="@drawable/day"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Tuesday"
+                android:id="@+id/button5" />
+
+            <Button
+                android:textColor="#FCF6F5FF"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="7dp"
+                android:paddingBottom="10dp"
+                android:layout_marginRight="1dp"
+                android:layout_marginLeft="0dp"
+                android:background="@drawable/day"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Wednesday"
+                android:id="@+id/button6" />
+
+            <Button
+                android:textColor="#FCF6F5FF"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="7dp"
+                android:paddingBottom="10dp"
+                android:layout_marginRight="1dp"
+                android:layout_marginLeft="0dp"
+                android:background="@drawable/day"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="THURSDAY"
+                android:id="@+id/button7" />
+
+            <Button
+                android:textColor="#FCF6F5FF"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="7dp"
+                android:paddingBottom="10dp"
+                android:layout_marginRight="1dp"
+                android:layout_marginLeft="0dp"
+                android:background="@drawable/day"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="FRIDAY"
+                android:id="@+id/button8" />
+
+            <Button
+                android:textColor="#FCF6F5FF"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="7dp"
+                android:paddingBottom="10dp"
+                android:layout_marginRight="1dp"
+                android:layout_marginLeft="0dp"
+                android:background="@drawable/day"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SATURDAY"
+                android:id="@+id/button9" />
+
+            <Button
+                android:textColor="#FCF6F5FF"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="7dp"
+                android:paddingBottom="10dp"
+                android:layout_marginRight="1dp"
+                android:layout_marginLeft="0dp"
+                android:background="@drawable/day"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SUNDAY"
+                android:id="@+id/button10" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/horizontalScrollView"
+        android:orientation="vertical">
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+        </android.support.v4.view.ViewPager>
+
+
+    </LinearLayout>
+    <!--<HorizontalScrollView-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:layout_below="@+id/horizontalScrollView"-->
+    <!--android:layout_alignParentBottom="true">-->
+
+
+    <!--</HorizontalScrollView>-->
+</RelativeLayout>
