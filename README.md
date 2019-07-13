@@ -1,5 +1,15 @@
 # OnTime - Attendance Manager
 
+In college life, every morning after sleep, what matters to us is "attendance". “Do I have
+attendance so that I can leave my class for sleep? Do I have 75% attendance to appear for
+exams?” OnTime will now take care of it. It will remember students’ classes time table, notify
+their low attendance, classes needed to be attended to get 75%, classes that they can leave
+and much more. They will only have to enter their time table of classes once and mark the
+classes they attended on the app. It will take care of the rest. No need to worry when will the
+ERP gets updated because they can now maintain their own record of attendance.
+Maintaining the attendance would get easier and one burden they would get relief of college
+life as there are many to carry.
+
 ## Add Subjects
 
 Subjects -> Add -> Enter details -> Subject Added
