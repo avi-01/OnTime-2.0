@@ -219,12 +219,12 @@
                     android:scaleType="fitCenter"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/info"
+                    android:src="@drawable/notes"
                     android:layout_gravity="center_horizontal"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="About Us"
+                    android:text="PREV ENTRY"
                     android:layout_marginLeft="5dp"
                     android:textAlignment="center"
                     android:textColor="@android:color/black"
@@ -258,12 +258,12 @@
                     android:scaleType="fitCenter"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/question"
+                    android:src="@drawable/info"
                     android:layout_gravity="center_horizontal"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="HELP"
+                    android:text="About us"
                     android:layout_marginLeft="5dp"
                     android:textAlignment="center"
                     android:textColor="@android:color/black"

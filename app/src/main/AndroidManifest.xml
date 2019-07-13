@@ -24,7 +24,19 @@
         <activity android:name=".Friday" />
         <activity android:name=".Saturday" />
         <activity android:name=".Sunday" />
-        <activity android:name=".Monday"></activity>
+        <activity android:name=".Monday" />
+        <activity android:name=".RemoveSubject" />
+        <activity android:name=".MondayUpdate" />
+        <activity android:name=".TuesdayUpdate" />
+        <activity android:name=".WedenesdayUpdate" />
+        <activity android:name=".WednesdayUpdate" />
+        <activity android:name=".ThursdayUpdate" />
+        <activity android:name=".FridayUpdate" />
+        <activity android:name=".SaturdayUpdate" />
+        <activity android:name=".SundayUpdate" />
+        <activity android:name=".AttendaceInfo" />
+        <activity android:name=".PrevEntry" />
+        <activity android:name=".AboutUs"></activity>
     </application>
 
 </manifest>

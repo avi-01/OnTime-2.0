@@ -8,7 +8,7 @@
 
     <!-- Defining where should text be placed. You set you text color here-->
     <TextView
-        android:id="@+id/list_content"
+        android:id="@+id/list_content7"
         android:textColor="#000000"
         android:text="sample"
         android:textSize="18sp"

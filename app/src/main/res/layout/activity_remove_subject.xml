@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:clipToPadding="true"
+    android:layout_height="fill_parent"
+    android:elevation="10dp">
+    <RelativeLayout
+        android:background="@drawable/subjectaddlay"
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        android:padding="10dp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/relativeLayout2">
+        <ImageButton
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageButton3"
+            android:src="@drawable/close"
+            android:background="#00000000"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true" />
+
+
+        <Button
+            android:layout_marginBottom="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Remove"
+            android:id="@+id/remove"
+            android:clickable="true"
+            android:textColor="#fff"
+            android:background="@drawable/redius_remove"
+            android:layout_alignParentBottom="true"
+            android:layout_alignEnd="@+id/textView" />
+
+        <Button
+            android:layout_marginBottom="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CANCEL"
+            android:id="@+id/cancel"
+            android:clickable="true"
+            android:textColor="#fff"
+            android:background="@drawable/radius"
+            android:layout_alignParentBottom="true"
+            android:layout_alignStart="@+id/textView" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_marginTop="45dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:textSize="20sp"
+            android:textColor="#fff"
+            android:layout_height="50dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Do you want to remove this subject?"
+            android:id="@+id/textView"
+            android:layout_alignTop="@+id/imageButton3"
+            android:layout_centerHorizontal="true" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

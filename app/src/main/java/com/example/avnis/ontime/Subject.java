@@ -122,7 +122,7 @@ public class Subject extends AppCompatActivity {
                 else
                 {
                     SQLiteDatabase am=openOrCreateDatabase("am",MODE_PRIVATE,null);
-                    am.execSQL("create table if not exists subjects(name varchar,tc int,ac int,per int)");
+                    am.execSQL("create table if not exists subjects(name varchar,tc varchar,ac varchar,per varchar)");
                     String query="select * from subjects where name=='"+s+"'";
                     Cursor cursor=am.rawQuery(query,null);
                     if(cursor.getCount()>0)
@@ -132,6 +132,7 @@ public class Subject extends AppCompatActivity {
                     else
                     {
                         am.execSQL("insert into subjects values('"+s+"','0','0','0')");
+                        am.execSQL("create table if not exists '"+s+"'(date varchar,time varchar,status varchar)");
                         Toast.makeText(Subject.this,"Subject Added", Toast.LENGTH_SHORT).show();
                         listItem.clear();
                         viewData();
@@ -157,7 +158,7 @@ public class Subject extends AppCompatActivity {
         {
             listItem.add(cursor.getString(0));
         }
-        adapter= new ArrayAdapter<>(this,R.layout.listlay,R.id.list_content,listItem);
+        adapter= new ArrayAdapter<>(this,R.layout.listlay,R.id.list_content7,listItem);
         list.setAdapter(adapter);
     }
 
