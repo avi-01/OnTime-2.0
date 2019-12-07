@@ -1,11 +1,14 @@
 package com.example.avnis.ontime;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -26,6 +29,19 @@ public class AttendaceInfo extends AppCompatActivity {
         add = (FloatingActionButton) findViewById(R.id.fab);
         listItem = new ArrayList<>();
         viewData();
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                InfoType subjectget;
+                subjectget= (InfoType) adapterView.getItemAtPosition(i);
+                final String subjectname=subjectget.getName();
+                Intent i1= new Intent(AttendaceInfo.this, InfoDetail.class);
+                Bundle b1= new Bundle();
+                b1.putString("subject", subjectname);
+                i1.putExtras(b1);
+                startActivity(i1);
+            }
+        });
 
 
     }
@@ -58,6 +74,8 @@ public class AttendaceInfo extends AppCompatActivity {
                 Log.e("TAG",classes+" "+names);
                 if (peri > 75) {
                     double req = aci - classes;
+                    req/=0.75;
+                    Log.e("TAG",req+" "+names);
                     int reqr=(int)req;
                     if(reqr==0 || reqr==1)
                     mess = "You may leave " + reqr + " class";
@@ -70,6 +88,7 @@ public class AttendaceInfo extends AppCompatActivity {
                 }
                 else {
                     double req = classes - aci;
+                    req/=0.25;
                     int reqi= (int) Math.ceil(req);
 
                     if(reqi==0 || reqi==1)
@@ -93,6 +112,8 @@ public class AttendaceInfo extends AppCompatActivity {
 //        listItem.add(e);
         InfoAdapter adapter = new InfoAdapter(this, R.layout.info, listItem);
         list.setAdapter(adapter);
+
+
     }
 
 }

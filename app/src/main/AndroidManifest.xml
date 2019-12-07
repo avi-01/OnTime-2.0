@@ -9,6 +9,7 @@
         android:noHistory="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".InfoDetail" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,17 +27,10 @@
         <activity android:name=".Sunday" />
         <activity android:name=".Monday" />
         <activity android:name=".RemoveSubject" />
-        <activity android:name=".MondayUpdate" />
-        <activity android:name=".TuesdayUpdate" />
-        <activity android:name=".WedenesdayUpdate" />
-        <activity android:name=".WednesdayUpdate" />
-        <activity android:name=".ThursdayUpdate" />
-        <activity android:name=".FridayUpdate" />
-        <activity android:name=".SaturdayUpdate" />
         <activity android:name=".SundayUpdate" />
         <activity android:name=".AttendaceInfo" />
         <activity android:name=".PrevEntry" />
-        <activity android:name=".AboutUs"></activity>
+        <activity android:name=".AboutUs" />
     </application>
 
 </manifest>

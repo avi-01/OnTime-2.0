@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class Subject extends AppCompatActivity {
     Button add;
     Dialog md;
     Dialog md1;
+    Dialog md2;
     ListView list;
     ArrayList<String> listItem;
     ArrayAdapter adapter;
@@ -39,6 +41,7 @@ public class Subject extends AppCompatActivity {
         add=(Button)findViewById(R.id.button);
         md=new Dialog(this);
         md1=new Dialog(this);
+        md2=new Dialog(this);
         list=(ListView)findViewById(R.id.listView);
         listItem=new ArrayList<>();
         viewData();
@@ -52,7 +55,7 @@ public class Subject extends AppCompatActivity {
         });
     }
 
-    private void editData(AdapterView<?> adapterView, View view, final int i, long l) {
+    private void editData(final AdapterView<?> adapterView, View view, final int i, final long l) {
         md1.setContentView(R.layout.editsubject);
         md1.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         ImageButton close1;
@@ -68,11 +71,7 @@ public class Subject extends AppCompatActivity {
         remove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SQLiteDatabase am=openOrCreateDatabase("am",MODE_PRIVATE,null);
-                String name=list.getItemAtPosition(i).toString();
-                am.execSQL("delete from subjects where name=='"+name+"'");
-                listItem.clear();
-                viewData();
+                removeData(adapterView,view,i);
                 md1.dismiss();
             }
         });
@@ -87,6 +86,43 @@ public class Subject extends AppCompatActivity {
                 SQLiteDatabase am=openOrCreateDatabase("am",MODE_PRIVATE,null);
                 String name=list.getItemAtPosition(i).toString();
                 am.execSQL("update subjects  set name='"+cname+"' where name=='"+name+"'");
+                for(int i=0;i<7;i++)
+                {
+                    String lday = "";
+                    if(i==0)
+                    {
+                        lday= "sunday";
+                    }
+                    else if(i==1)
+                    {
+                        lday="monday";
+                    }
+                    else if(i==2)
+                    {
+                        lday="wednesday";
+                    }
+                    else if(i==3)
+                    {
+                        lday="thursday";
+                    }
+                    else if(i==4)
+                    {
+                        lday="friday";
+                    }
+                    else if(i==5)
+                    {
+                        lday="saturday";
+                    }
+                    else if(i==6)
+                    {
+                        lday="tuesday";
+                    }
+                    am.execSQL("update '"+lday+"' set name='"+cname+"' where name=='"+name+"'");
+
+                }
+
+                am.execSQL("update extra set name='"+cname+"' where name=='"+name+"'");
+                am.execSQL("ALTER TABLE '"+name+"' RENAME TO '"+cname+"'");
                 listItem.clear();
                 viewData();
                 md1.dismiss();
@@ -99,6 +135,82 @@ public class Subject extends AppCompatActivity {
             }
         });
     }
+
+    private void removeData(AdapterView<?> adapterView, View view, final int i) {
+        md2.setContentView(R.layout.activity_remove_subject);
+        md2.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        ImageButton close1;
+        Button remove,cancel;
+        TextView warning;
+        md2.show();
+        remove=(Button)md2.findViewById(R.id.remove);
+        cancel=(Button)md2.findViewById(R.id.cancel);
+        close1=(ImageButton)md2.findViewById(R.id.imageButton3);
+        warning= (TextView)md2.findViewById(R.id.textView);
+
+        String name=list.getItemAtPosition(i).toString();
+        warning.setText("Do you want to remove the subject '"+name+"'");
+        remove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SQLiteDatabase am=openOrCreateDatabase("am",MODE_PRIVATE,null);
+                String name=list.getItemAtPosition(i).toString();
+                am.execSQL("delete from subjects where name=='"+name+"'");
+                for(int i=0;i<7;i++)
+                {
+                    String lday = "";
+                    if(i==0)
+                    {
+                        lday= "sunday";
+                    }
+                    else if(i==1)
+                    {
+                        lday="monday";
+                    }
+                    else if(i==2)
+                    {
+                        lday="wednesday";
+                    }
+                    else if(i==3)
+                    {
+                        lday="thursday";
+                    }
+                    else if(i==4)
+                    {
+                        lday="friday";
+                    }
+                    else if(i==5)
+                    {
+                        lday="saturday";
+                    }
+                    else if(i==6)
+                    {
+                        lday="tuesday";
+                    }
+                    am.execSQL("delete from '"+lday+"' where name=='"+name+"'");
+
+                }
+                am.execSQL("delete from extra where name=='"+name+"'");
+                listItem.clear();
+                viewData();
+                md2.dismiss();
+            }
+        });
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                md2.dismiss();
+            }
+        });
+        close1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                md2.dismiss();
+            }
+        });
+    }
+
+
 
 
     public void ShowPopup(View v) {

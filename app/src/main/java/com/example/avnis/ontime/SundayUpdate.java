@@ -6,10 +6,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -18,6 +22,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -33,7 +38,8 @@ public class SundayUpdate extends AppCompatActivity {
     FloatingActionButton add;
     String date="";
     Dialog md,md2;
-    String day="sunday";
+    String day="";
+    ImageView headerImage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,15 +50,87 @@ public class SundayUpdate extends AppCompatActivity {
         if(b!=null)
         {
             date=b.getString("date");
+            day=b.getString("day");
+//            Log.e("DAY",b.getString("day"));
         }
+
+        SQLiteDatabase am=openOrCreateDatabase("am",MODE_PRIVATE,null);
+        headerImage = (ImageView)findViewById(R.id.imageView2);
+        headerImage.setImageResource(getResources().getIdentifier(day, "drawable", getPackageName()));
+        Log.e("DAY",day);
         list=(ListView)findViewById(R.id.listView2);
         add=(FloatingActionButton)findViewById(R.id.fab);
         listItem=new ArrayList<>();
         viewData();
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+//        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                ShowPopUp(adapterView,view,i,l);
+//            }
+//        });
+
+        final Button present = (Button)findViewById(R.id.button16);
+        final Button absent = (Button)findViewById(R.id.button15);
+        final Button cancel = (Button)findViewById(R.id.button14);
+
+        present.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                ShowPopUp(adapterView,view,i,l);
+            public void onClick(View view) {
+
+                Integer si = list.getCount();
+                Log.e("Size",si.toString());
+                Integer i = 0;
+                while(i<si)
+                {
+
+                    Log.e("Size",i.toString());
+                    UpdateListType listItem =(UpdateListType) list.getItemAtPosition(i);
+                    present(listItem.getName(),listItem.getTime());
+                    i++;
+                }
+
+                viewData();
+            }
+        });
+
+        absent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Integer si = list.getCount();
+                Log.e("Size",si.toString());
+                Integer i = 0;
+                while(i<si)
+                {
+
+                    Log.e("Size",i.toString());
+                    UpdateListType listItem =(UpdateListType) list.getItemAtPosition(i);
+                    absent(listItem.getName(),listItem.getTime());
+                    i++;
+                }
+
+                viewData();
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Integer si = list.getCount();
+                Log.e("Size",si.toString());
+                Integer i = 0;
+                while(i<si)
+                {
+
+                    Log.e("Size",i.toString());
+                    UpdateListType listItem =(UpdateListType) list.getItemAtPosition(i);
+                    cancel(listItem.getName(),listItem.getTime());
+                    i++;
+                }
+
+                viewData();
             }
         });
 
@@ -77,6 +155,7 @@ public class SundayUpdate extends AppCompatActivity {
             String names,times,attes,mess,pers,statuss;
             names=cursor.getString(1);
             times=cursor.getString(0);
+            Log.e("SunjectDay",names+" "+times);
             String query2="select * from '"+names+"' where date=='"+date+"' and time=='"+times+"'";
             Cursor cursor2=am.rawQuery(query2,null);
             if(cursor2.getCount()>0)
@@ -126,8 +205,75 @@ public class SundayUpdate extends AppCompatActivity {
             }
 //            UpdateListType a=new UpdateListType("8:30","MATH","Attendance 0/0","You need to attend this class","75%","Present");
             UpdateListType a=new UpdateListType(times,names,attes,mess,pers,statuss);
+
+            Log.e("Subjadd",names+" "+times+" "+attes+" "+mess+" "+pers+" "+statuss);
             listItem.add(a);
         }
+
+
+        query="select * from extra where date='"+date+"'";
+        cursor=am.rawQuery(query,null);
+        while(cursor.moveToNext())
+        {
+            int flag=0;
+            String names,times,attes,mess,pers,statuss;
+            names=cursor.getString(2);
+            times=cursor.getString(1);
+            Log.e("ExtraSubject",names+" "+times);
+            String query2="select * from '"+names+"' where date=='"+date+"' and time=='"+times+"'";
+            Cursor cursor2=am.rawQuery(query2,null);
+            if(cursor2.getCount()>0)
+            {
+                flag=1;
+                cursor2.moveToNext();
+                String stat=cursor2.getString(2);
+                if(stat.equals("0"))
+                    statuss="ABSENT";
+                else if(stat.equals("1"))
+                    statuss="PRESENT";
+                else
+                {
+                    statuss="CANCELLED";
+                }
+            }
+            else
+            {
+                statuss="ADD ENTRY";
+            }
+            String query3="select * from subjects where name=='"+names+"'";
+            Cursor cursor3=am.rawQuery(query3,null);
+            if (cursor3.getCount()>0) {
+                cursor3.moveToNext();
+                String tc = cursor3.getString(1);
+                String ac = cursor3.getString(2);
+                attes = "Attendance " + ac + "/" + tc;
+                Integer tci=Integer.parseInt(tc);
+                Integer aci=Integer.parseInt(ac);
+                tci++;
+                Integer pper;
+                pper=aci*100;
+                pper=(Integer)pper/tci;
+                if(pper<75)
+                    mess = "You need to attend this class";
+                else
+                    mess = "You may leave this class today";
+                pers = cursor3.getString(3)+"%";
+                if(flag!=0)
+                    mess="You set the entry for the class";
+            }
+            else
+            {
+                attes = "Attendance " + 0 + "/" + 0;
+                mess = "You need to attend this class";
+                pers = "0%";
+            }
+//            UpdateListType a=new UpdateListType("8:30","MATH","Attendance 0/0","You need to attend this class","75%","Present");
+            UpdateListType a=new UpdateListType(times,names,attes,mess,pers,statuss);
+            Log.e("Extradd",names+" "+times+" "+attes+" "+mess+" "+pers+" "+statuss);
+            listItem.add(a);
+        }
+
+
 //        UpdateListType b=new UpdateListType("9:30","MATH","Attendance 0/0","You need to attend this class","75%","Present");
 //        listItem.add(b);
 //        UpdateListType c=new UpdateListType("7:30","MATH","Attendance 0/0","You need to attend this class","75%","Present");
@@ -152,7 +298,7 @@ public class SundayUpdate extends AppCompatActivity {
                 return starttime1.compareTo(starttime2);
             }
         });
-        UpdateAdapter adapter= new UpdateAdapter(this,R.layout.update_list,listItem);
+        UpdateAdapter adapter= new UpdateAdapter(this,R.layout.update_list,listItem,date);
         list.setAdapter(adapter);
     }
 
@@ -293,6 +439,13 @@ public class SundayUpdate extends AppCompatActivity {
                     }
                     else {
                         SQLiteDatabase am = openOrCreateDatabase("am", android.content.Context.MODE_PRIVATE, null);
+
+                        Cursor extraCursor=am.rawQuery("select * from extra where name='" + subject + "' and date=='"+date+"' and time=='"+times+"'",null);
+                        if(extraCursor.getCount()==0)
+                        {
+                            am.execSQL("insert into extra values('"+date+"','"+times+"','"+subject+"')");
+                        }
+
                         String query = "select * from '"+day+"' where time='" + times + "' and name='" + subject + "'";
                         Cursor cursor = am.rawQuery(query, null);
                         String query2="select * from '"+subject+"' where date=='"+date+"' and time=='"+times+"'";
@@ -417,6 +570,13 @@ public class SundayUpdate extends AppCompatActivity {
                     }
                     else {
                         SQLiteDatabase am = openOrCreateDatabase("am", android.content.Context.MODE_PRIVATE, null);
+
+                        Cursor extraCursor=am.rawQuery("select * from extra where name='" + subject + "' and date=='"+date+"' and time=='"+times+"'",null);
+                        if(extraCursor.getCount()==0)
+                        {
+                            am.execSQL("insert into extra values('"+date+"','"+times+"','"+subject+"')");
+                        }
+
                         String query = "select * from '"+day+"' where time=='" + times + "' and name=='" + subject + "'";
                         String query2="select * from '"+subject+"' where date=='"+date+"' and time=='"+times+"'";
                         Cursor cursor2=am.rawQuery(query2,null);
@@ -483,6 +643,253 @@ public class SundayUpdate extends AppCompatActivity {
 
 
     }
+
+
+    public void present(String subjectname,String subjecttime){
+        SQLiteDatabase am=openOrCreateDatabase("am",android.content.Context.MODE_PRIVATE,null);
+        String query="select * from '"+subjectname+"' where date=='"+date+"' and time=='"+subjecttime+"'";
+        Cursor cursor=am.rawQuery(query,null);
+        if(cursor.getCount()>0)
+        {
+            cursor.moveToNext();
+            String stat=cursor.getString(2);
+            am.execSQL("update '"+subjectname+"' set status='1' where date=='"+date+"' and time=='"+subjecttime+"'");
+            if(stat.equals("0"))
+            {
+                String query1="select * from subjects where name=='"+subjectname+"'";
+                Cursor cursor1=am.rawQuery(query1,null);
+                if(cursor1.getCount()>0)
+                {
+                    cursor1.moveToNext();
+                    String ac = cursor1.getString(2);
+                    String tc = cursor1.getString(1);
+                    Integer aci=Integer.parseInt(ac);
+                    Integer tci=Integer.parseInt(tc);
+                    aci++;
+                    Integer per=aci*100;
+                    per=(Integer)per/tci;
+                    String pers=per.toString();
+                    String acs=aci.toString();
+                    am.execSQL("update subjects set ac='"+acs+"' where name=='"+subjectname+"'");
+                    am.execSQL("update subjects set per='"+pers+"' where name=='"+subjectname+"'");
+                }
+            }
+            else if(stat.equals("2"))
+            {
+                String query1="select * from subjects where name=='"+subjectname+"'";
+                Cursor cursor1=am.rawQuery(query1,null);
+                if(cursor1.getCount()>0)
+                {
+                    cursor1.moveToNext();
+                    String ac = cursor1.getString(2);
+                    String tc = cursor1.getString(1);
+                    Integer aci=Integer.parseInt(ac);
+                    Integer tci=Integer.parseInt(tc);
+                    aci++;
+                    tci++;
+                    String acs=aci.toString();
+                    String tcs=tci.toString();
+                    Integer per=aci*100;
+                    per=(Integer)per/tci;
+                    String pers=per.toString();
+                    am.execSQL("update subjects set ac='"+acs+"' where name=='"+subjectname+"'");
+                    am.execSQL("update subjects set tc='"+tcs+"' where name=='"+subjectname+"'");
+                    am.execSQL("update subjects set per='"+pers+"' where name=='"+subjectname+"'");
+                }
+            }
+        }
+
+        else
+        {
+            am.execSQL("insert into '"+subjectname+"' values('"+date+"','"+subjecttime+"','1')");
+            String query1="select * from subjects where name=='"+subjectname+"'";
+            Cursor cursor1=am.rawQuery(query1,null);
+            if(cursor1.getCount()>0)
+            {
+                cursor1.moveToNext();
+                String ac = cursor1.getString(2);
+                String tc = cursor1.getString(1);
+                Integer aci=Integer.parseInt(ac);
+                Integer tci=Integer.parseInt(tc);
+                aci++;
+                tci++;
+                String acs=aci.toString();
+                String tcs=tci.toString();
+                Integer per=aci*100;
+                per=(Integer)per/tci;
+                String pers=per.toString();
+                am.execSQL("update subjects set ac='"+acs+"' where name=='"+subjectname+"'");
+                am.execSQL("update subjects set tc='"+tcs+"' where name=='"+subjectname+"'");
+                am.execSQL("update subjects set per='"+pers+"' where name=='"+subjectname+"'");
+            }
+        }
+        Toast.makeText(SundayUpdate.this, "Classes Stat changed to PRESENT", Toast.LENGTH_SHORT).show();
+        viewData();
+
+    }
+
+    public void absent(String subjectname,String subjecttime){
+        SQLiteDatabase am=openOrCreateDatabase("am",android.content.Context.MODE_PRIVATE,null);
+        String query="select * from '"+subjectname+"' where date=='"+date+"' and time=='"+subjecttime+"'";
+        Cursor cursor=am.rawQuery(query,null);
+        if(cursor.getCount()>0)
+        {
+            cursor.moveToNext();
+            String stat=cursor.getString(2);
+            am.execSQL("update '"+subjectname+"' set status='0' where date=='"+date+"' and time=='"+subjecttime+"'");
+            if(stat.equals("1"))
+            {
+                String query1="select * from subjects where name=='"+subjectname+"'";
+                Cursor cursor1=am.rawQuery(query1,null);
+                if(cursor1.getCount()>0)
+                {
+                    cursor1.moveToNext();
+                    String ac = cursor1.getString(2);
+                    String tc = cursor1.getString(1);
+                    Integer aci=Integer.parseInt(ac);
+                    Integer tci=Integer.parseInt(tc);
+                    aci--;
+                    Integer per=aci*100;
+                    per=(Integer)per/tci;
+                    String pers=per.toString();
+                    String acs=aci.toString();
+                    am.execSQL("update subjects set ac='"+acs+"' where name=='"+subjectname+"'");
+                    am.execSQL("update subjects set per='"+pers+"' where name=='"+subjectname+"'");
+                }
+            }
+            else if(stat.equals("2"))
+            {
+                String query1="select * from subjects where name=='"+subjectname+"'";
+                Cursor cursor1=am.rawQuery(query1,null);
+                if(cursor1.getCount()>0)
+                {
+                    cursor1.moveToNext();
+                    String ac = cursor1.getString(2);
+                    String tc = cursor1.getString(1);
+                    Integer aci=Integer.parseInt(ac);
+                    Integer tci=Integer.parseInt(tc);
+                    tci++;
+                    String acs=aci.toString();
+                    String tcs=tci.toString();
+                    Integer per=aci*100;
+                    per=(Integer)per/tci;
+                    String pers=per.toString();
+                    am.execSQL("update subjects set ac='"+acs+"' where name=='"+subjectname+"'");
+                    am.execSQL("update subjects set tc='"+tcs+"' where name=='"+subjectname+"'");
+                    am.execSQL("update subjects set per='"+pers+"' where name=='"+subjectname+"'");
+                }
+            }
+        }
+
+        else
+        {
+            am.execSQL("insert into '"+subjectname+"' values('"+date+"','"+subjecttime+"','0')");
+            String query1="select * from subjects where name=='"+subjectname+"'";
+            Cursor cursor1=am.rawQuery(query1,null);
+            if(cursor1.getCount()>0)
+            {
+                cursor1.moveToNext();
+                String ac = cursor1.getString(2);
+                String tc = cursor1.getString(1);
+                Integer aci=Integer.parseInt(ac);
+                Integer tci=Integer.parseInt(tc);
+                tci++;
+                String acs=aci.toString();
+                String tcs=tci.toString();
+                Integer per=aci*100;
+                per=(Integer)per/tci;
+                String pers=per.toString();
+                am.execSQL("update subjects set ac='"+acs+"' where name=='"+subjectname+"'");
+                am.execSQL("update subjects set tc='"+tcs+"' where name=='"+subjectname+"'");
+                am.execSQL("update subjects set per='"+pers+"' where name=='"+subjectname+"'");
+            }
+        }
+        Toast.makeText(SundayUpdate.this, "Classes Stat changed to ABSENT", Toast.LENGTH_SHORT).show();
+        viewData();
+
+    }
+
+    public void cancel(String subjectname,String subjecttime){
+
+        SQLiteDatabase am=openOrCreateDatabase("am",android.content.Context.MODE_PRIVATE,null);
+        String query="select * from '"+subjectname+"' where date=='"+date+"' and time=='"+subjecttime+"'";
+        Cursor cursor=am.rawQuery(query,null);
+        if(cursor.getCount()>0)
+        {
+            cursor.moveToNext();
+            String stat=cursor.getString(2);
+            am.execSQL("update '"+subjectname+"' set status='2' where date=='"+date+"' and time=='"+subjecttime+"'");
+            if(stat.equals("0"))
+            {
+                String query1="select * from subjects where name=='"+subjectname+"'";
+                Cursor cursor1=am.rawQuery(query1,null);
+                if(cursor1.getCount()>0)
+                {
+                    cursor1.moveToNext();
+                    String ac = cursor1.getString(2);
+                    String tc = cursor1.getString(1);
+                    Integer aci=Integer.parseInt(ac);
+                    Integer tci=Integer.parseInt(tc);
+                    tci--;
+                    Integer per;
+                    if(tci==0)
+                        per=0;
+                    else
+                    {
+                        per=aci*100;
+                        per=(Integer)per/tci;
+                    }
+                    String pers=per.toString();
+                    String acs=aci.toString();
+                    String tcs=tci.toString();
+                    am.execSQL("update subjects set ac='"+acs+"' where name=='"+subjectname+"'");
+                    am.execSQL("update subjects set tc='"+tcs+"' where name=='"+subjectname+"'");
+                    am.execSQL("update subjects set per='"+pers+"' where name=='"+subjectname+"'");
+                }
+            }
+            else if(stat.equals("1"))
+            {
+                String query1="select * from subjects where name=='"+subjectname+"'";
+                Cursor cursor1=am.rawQuery(query1,null);
+                if(cursor1.getCount()>0)
+                {
+                    cursor1.moveToNext();
+                    String ac = cursor1.getString(2);
+                    String tc = cursor1.getString(1);
+                    Integer aci=Integer.parseInt(ac);
+                    Integer tci=Integer.parseInt(tc);
+                    aci--;
+                    tci--;
+                    String acs=aci.toString();
+                    String tcs=tci.toString();
+                    Integer per;
+                    if(tci==0)
+                        per=0;
+                    else
+                    {
+                        per=aci*100;
+                        per=(Integer)per/tci;
+                    }
+                    String pers=per.toString();
+                    am.execSQL("update subjects set ac='"+acs+"' where name=='"+subjectname+"'");
+                    am.execSQL("update subjects set tc='"+tcs+"' where name=='"+subjectname+"'");
+                    am.execSQL("update subjects set per='"+pers+"' where name=='"+subjectname+"'");
+                }
+            }
+        }
+
+        else
+        {
+            am.execSQL("insert into '"+subjectname+"' values('"+date+"','"+subjecttime+"','2')");
+            String query1="select * from subjects where name=='"+subjectname+"'";
+            Cursor cursor1=am.rawQuery(query1,null);
+        }
+        Toast.makeText(SundayUpdate.this, "Classes Stat changed to CANCELLED", Toast.LENGTH_SHORT).show();
+        viewData();
+
+    }
+
+
     public void ShowPopUp(AdapterView<?> adapterView, View v, int i, long l) {
         md.setContentView(R.layout.markatt);
         ImageButton close;
@@ -763,4 +1170,5 @@ public class SundayUpdate extends AppCompatActivity {
         });
 
     }
+
 }

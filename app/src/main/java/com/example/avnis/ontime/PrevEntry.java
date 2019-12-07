@@ -92,48 +92,55 @@ public class PrevEntry extends AppCompatActivity {
                         Intent i1 = new Intent(PrevEntry.this, SundayUpdate.class);
                         Bundle b1 = new Bundle();
                         b1.putString("date", todayString);
+                        b1.putString("day", "sunday");
                         i1.putExtras(b1);
                         startActivity(i1);
                         break;
                     case java.util.Calendar.MONDAY:
-                        Intent i2 = new Intent(PrevEntry.this, MondayUpdate.class);
+                        Intent i2 = new Intent(PrevEntry.this, SundayUpdate.class);
                         Bundle b2 = new Bundle();
                         b2.putString("date", todayString);
+                        b2.putString("day", "monday");
                         i2.putExtras(b2);
                         startActivity(i2);
                         break;
                     case java.util.Calendar.TUESDAY:
-                        Intent i3 = new Intent(PrevEntry.this, TuesdayUpdate.class);
+                        Intent i3 = new Intent(PrevEntry.this, SundayUpdate.class);
                         Bundle b3 = new Bundle();
                         b3.putString("date", todayString);
+                        b3.putString("day", "tuesday");
                         i3.putExtras(b3);
                         startActivity(i3);
                         break;
                     case java.util.Calendar.WEDNESDAY:
-                        Intent i4 = new Intent(PrevEntry.this, WednesdayUpdate.class);
+                        Intent i4 = new Intent(PrevEntry.this, SundayUpdate.class);
                         Bundle b4 = new Bundle();
                         b4.putString("date", todayString);
+                        b4.putString("day", "wednesday");
                         i4.putExtras(b4);
                         startActivity(i4);
                         break;
                     case java.util.Calendar.THURSDAY:
-                        Intent i5 = new Intent(PrevEntry.this, ThursdayUpdate.class);
+                        Intent i5 = new Intent(PrevEntry.this, SundayUpdate.class);
                         Bundle b5 = new Bundle();
                         b5.putString("date", todayString);
+                        b5.putString("day", "thursday");
                         i5.putExtras(b5);
                         startActivity(i5);
                         break;
                     case java.util.Calendar.FRIDAY:
-                        Intent i6 = new Intent(PrevEntry.this, FridayUpdate.class);
+                        Intent i6 = new Intent(PrevEntry.this, SundayUpdate.class);
                         Bundle b6 = new Bundle();
                         b6.putString("date", todayString);
+                        b6.putString("day", "friday");
                         i6.putExtras(b6);
                         startActivity(i6);
                         break;
                     case java.util.Calendar.SATURDAY:
-                        Intent i7 = new Intent(PrevEntry.this, SaturdayUpdate.class);
+                        Intent i7 = new Intent(PrevEntry.this, SundayUpdate.class);
                         Bundle b7 = new Bundle();
                         b7.putString("date", todayString);
+                        b7.putString("day", "saturday");
                         i7.putExtras(b7);
                         startActivity(i7);
                         break;

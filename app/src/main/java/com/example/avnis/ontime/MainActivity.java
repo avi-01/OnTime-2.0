@@ -1,5 +1,6 @@
 package com.example.avnis.ontime;
 
+import android.app.NotificationManager;
 import android.content.Intent;
 
 import java.text.DateFormat;
@@ -8,6 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -21,11 +23,15 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG= "MainActivity";
     CardView c1,c2,c3,c4,c5,c6;
+    public static String todayString;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
         SQLiteDatabase am=openOrCreateDatabase("am",MODE_PRIVATE,null);
+        am.execSQL("create table if not exists extra(date varchar,time varchar,name varchar)");
         am.execSQL("create table if not exists monday(time varchar,name varchar,dur varchar)");
         am.execSQL("create table if not exists tuesday(time varchar,name varchar,dur varchar)");
         am.execSQL("create table if not exists wednesday(time varchar,name varchar,dur varchar)");
@@ -50,61 +56,44 @@ public class MainActivity extends AppCompatActivity {
 //                Today=Calendar.SUNDAY;
 
                 String day=Integer.toString(calendar.DAY_OF_MONTH);
+                String DAY;
                 Date todayDate = Calendar.getInstance().getTime();
                 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                String todayString = formatter.format(todayDate);
+                todayString = formatter.format(todayDate);
                 Log.e("MainActivity",todayString);
+                Log.e("MainActivity",Today.toString());
                 switch (Today) {
                     case Calendar.SUNDAY:
-                        Intent i1= new Intent(MainActivity.this,SundayUpdate.class);
-                        Bundle b1= new Bundle();
-                        b1.putString("date", todayString);
-                        i1.putExtras(b1);
-                        startActivity(i1);
+                        DAY="sunday";
                         break;
                     case Calendar.MONDAY:
-                        Intent i2= new Intent(MainActivity.this,MondayUpdate.class);
-                        Bundle b2 = new Bundle();
-                        b2.putString("date", todayString);
-                        i2.putExtras(b2);
-                        startActivity(i2);
+                        DAY="monday";
                         break;
                     case Calendar.TUESDAY:
-                        Intent i3= new Intent(MainActivity.this,TuesdayUpdate.class);
-                        Bundle b3 = new Bundle();
-                        b3.putString("date", todayString);
-                        i3.putExtras(b3);
-                        startActivity(i3);
+                        DAY="tuesday";
                         break;
                     case Calendar.WEDNESDAY:
-                        Intent i4= new Intent(MainActivity.this,WednesdayUpdate.class);
-                        Bundle b4 = new Bundle();
-                        b4.putString("date", todayString);
-                        i4.putExtras(b4);
-                        startActivity(i4);
+                        DAY="wednesday";
                         break;
                     case Calendar.THURSDAY:
-                        Intent i5= new Intent(MainActivity.this,ThursdayUpdate.class);
-                        Bundle b5 = new Bundle();
-                        b5.putString("date", todayString);
-                        i5.putExtras(b5);
-                        startActivity(i5);
+                        DAY="thursday";
                         break;
                     case Calendar.FRIDAY:
-                        Intent i6= new Intent(MainActivity.this,FridayUpdate.class);
-                        Bundle b6 = new Bundle();
-                        b6.putString("date", todayString);
-                        i6.putExtras(b6);
-                        startActivity(i6);
+                        DAY="friday";
                         break;
                     case Calendar.SATURDAY:
-                        Intent i7= new Intent(MainActivity.this,SaturdayUpdate.class);
-                        Bundle b7 = new Bundle();
-                        b7.putString("date", todayString);
-                        i7.putExtras(b7);
-                        startActivity(i7);
+                        DAY="saturday";
                         break;
+                    default:
+                        throw new IllegalStateException("Unexpected value: " + Today);
                 }
+
+                Intent i1= new Intent(MainActivity.this, SundayUpdate.class);
+                Bundle b1= new Bundle();
+                b1.putString("date", todayString);
+                b1.putString("day", DAY);
+                i1.putExtras(b1);
+                startActivity(i1);
             }
         });
 
@@ -237,4 +226,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
 }
