@@ -174,7 +174,7 @@ public class AddSubjectTime extends DialogFragment {
                             System.out.println(System.currentTimeMillis() +" "+time+"   "+Long.parseLong(time_A[0])+" "+Long.parseLong(time_A[1])+"   "+date1.get(HOUR_OF_DAY)+" "+date1.get(Calendar.MINUTE));
                             System.out.println(((Long.parseLong(time_A[0])*60 + Long.parseLong(time_A[1]))*60)*1000 +"  "+((date1.get(HOUR_OF_DAY)*60 + date1.get(MINUTE))*60)*1000);
 
-                            if(time < System.currentTimeMillis())
+                            if(time - 30*60*1000 < System.currentTimeMillis())
                             {
                                 time = time + 7*24*60*60*1000 ;
                             }
@@ -194,7 +194,7 @@ public class AddSubjectTime extends DialogFragment {
                                     getContext(),id ,intent, PendingIntent.FLAG_CANCEL_CURRENT|PendingIntent.FLAG_UPDATE_CURRENT);
 
                             AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(ALARM_SERVICE);
-                            alarmManager.setExact(AlarmManager.RTC_WAKEUP, time + 0*1000,pendingIntent);
+                            alarmManager.setExact(AlarmManager.RTC_WAKEUP, time - 30*60*1000,pendingIntent);
 
 
                             Intent intent1 = new Intent(getContext(), MyBroadcastReceiver.class);
@@ -209,7 +209,7 @@ public class AddSubjectTime extends DialogFragment {
                                     getContext(), id1,intent1, PendingIntent.FLAG_CANCEL_CURRENT|PendingIntent.FLAG_UPDATE_CURRENT);
 
 
-                            alarmManager.setExact(AlarmManager.RTC_WAKEUP, time + 4*1000,pendingIntent1);
+                            alarmManager.setExact(AlarmManager.RTC_WAKEUP, time + 30*60*1000,pendingIntent1);
 
                         }
 

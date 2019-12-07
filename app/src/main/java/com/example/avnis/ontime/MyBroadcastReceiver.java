@@ -1,5 +1,6 @@
 package com.example.avnis.ontime;
 
+import android.app.AlarmManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -17,6 +18,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import static android.app.Notification.FLAG_AUTO_CANCEL;
+import static android.content.Context.ALARM_SERVICE;
 
 
 public class MyBroadcastReceiver extends BroadcastReceiver {
@@ -29,14 +31,59 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         todayString = formatter.format(todayDate);
 
+
+        String type = "";
+        type = intent.getStringExtra("type");
+        String day = "";
+        day = intent.getStringExtra("day");
+
+        if(type.equals("day")){
+
+            Log.e("Type",type);
+
+            Intent intent1 = new Intent(context,MyBroadcastReceiver.class);
+            intent1.putExtra("type", type);
+            intent1.putExtra("day", day);
+
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                    context, MainActivity.NotificationID.getID(), intent1, 0);
+
+
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 24*60*60*1000, pendingIntent);
+
+            SQLiteDatabase am = context.openOrCreateDatabase("am", android.content.Context.MODE_PRIVATE, null);
+            String query = "select * from '"+day+"'";
+            Cursor cursor = am.rawQuery(query, null);
+
+            while(cursor.moveToNext())
+            {
+                String name = cursor.getString(1);
+                String time = cursor.getString(0);
+                String query1 = "select * from '"+name+"' where date='"+todayString+"' and time='"+time+"' ";
+                Cursor cursor1 = am.rawQuery(query1, null);
+                if(cursor1.getCount()==0)
+                {
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(context, MainActivity.CHANNEL_3_ID)
+                            .setSmallIcon(R.drawable.ic_launcher)
+                            .setContentTitle("Update Class Status")
+                            .setContentText("Please update the satus of today's classes")
+                            .setColor(ContextCompat.getColor(context, R.color.colorPrimaryDark))
+                            .setPriority(NotificationCompat.PRIORITY_HIGH);
+
+                    int id = MainActivity.NotificationID.getID();
+                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+                    notificationManager.notify(id, builder.build());
+                    break;
+                }
+            }
+            return;
+        }
+
         String name = "";
         name= intent.getStringExtra("name");
         String timeS = "";
         timeS = intent.getStringExtra("time");
-        String day = "";
-        day = intent.getStringExtra("day");
-        String type = "";
-        type = intent.getStringExtra("type");
         Log.e("Recevier","Recieved"+" "+name+" "+timeS+" "+day+" "+type);
 
         Intent intent1 = new Intent(context, MyBroadcastReceiver.class);
@@ -95,11 +142,10 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
                     intent1.putExtra("day", day);
 
                     PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                            context, MainActivity.IntentId, intent1, 0);
-                    MainActivity.IntentId++;
+                            context, MainActivity.NotificationID.getID(), intent1, 0);
 
-//            AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
-//            alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000, pendingIntent);
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000, pendingIntent);
 
                 }
                 else if(type.equals("update")){
@@ -154,8 +200,8 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
                             context, MainActivity.IntentId, intent1, 0);
                     MainActivity.IntentId++;
 
-//            AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
-//            alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000, pendingIntent);
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000, pendingIntent);
 
                 }
                 else if(type.equals("present")){

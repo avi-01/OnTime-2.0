@@ -1,7 +1,9 @@
 package com.example.avnis.ontime;
 
+import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 
 import java.text.DateFormat;
@@ -11,6 +13,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     public static String todayString;
     public static String CHANNEL_1_ID  = "reminder";
     public static String CHANNEL_2_ID  = "update";
+    public static String CHANNEL_3_ID  = "dayReminder";
     public static int id = 1;
     public static int IntentId = 2;
     @Override
@@ -36,6 +40,64 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         createNotificationChannel();
+
+
+        SQLiteDatabase am1=openOrCreateDatabase("am",MODE_PRIVATE,null);
+        am1.execSQL("create table if not exists notify(name varchar,val varchar)");
+        String query1 = ("select * from notify where name='dayNotify'");
+        Cursor cursor1 = am1.rawQuery(query1,null);
+        if(cursor1.getCount()==0)
+        {
+            Log.e("notify","Count = 0");
+
+            am1.execSQL("insert into notify values('dayNotify','1')");
+
+            Intent intent1 = new Intent(MainActivity.this, MyBroadcastReceiver.class);
+            int id1= MainActivity.NotificationID.getID();
+
+
+            Calendar calendar = Calendar.getInstance();
+            Integer Today = calendar.get(Calendar.DAY_OF_WEEK);
+            String DAY;
+            switch (Today) {
+                case Calendar.SUNDAY:
+                    DAY="sunday";
+                    break;
+                case Calendar.MONDAY:
+                    DAY="monday";
+                    break;
+                case Calendar.TUESDAY:
+                    DAY="tuesday";
+                    break;
+                case Calendar.WEDNESDAY:
+                    DAY="wednesday";
+                    break;
+                case Calendar.THURSDAY:
+                    DAY="thursday";
+                    break;
+                case Calendar.FRIDAY:
+                    DAY="friday";
+                    break;
+                case Calendar.SATURDAY:
+                    DAY="saturday";
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + Today);
+            }
+
+            intent1.putExtra("type","day");
+            intent1.putExtra("day",DAY);
+
+            PendingIntent pendingIntent1 = PendingIntent.getBroadcast(MainActivity.this, id1,intent1, 0);
+
+            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+            Calendar calTime = Calendar.getInstance();
+            long time = calTime.getTimeInMillis() + 21*60*60*1000 - (calTime.get(Calendar.HOUR_OF_DAY)*60 + calTime.get(Calendar.MINUTE))*60*1000;
+
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, time,pendingIntent1);
+
+        }
+
 
 
         SQLiteDatabase am=openOrCreateDatabase("am",MODE_PRIVATE,null);
@@ -258,6 +320,14 @@ public class MainActivity extends AppCompatActivity {
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this
             notificationManager.createNotificationChannel(channel2);
+
+
+            CharSequence name3 = "DayReminder";
+            String description3 = "Update Class reminder at the end of the day";
+            int importance3 = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel3 = new NotificationChannel(CHANNEL_3_ID, name3, importance3);
+            channel3.setDescription(description3);
+            notificationManager.createNotificationChannel(channel3);
         }
     }
 
