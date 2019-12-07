@@ -1,6 +1,7 @@
 package com.example.avnis.ontime;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -86,7 +87,7 @@ public class SundayUpdate extends AppCompatActivity {
 
                     Log.e("Size",i.toString());
                     UpdateListType listItem =(UpdateListType) list.getItemAtPosition(i);
-                    present(listItem.getName(),listItem.getTime());
+                    present(SundayUpdate.this,listItem.getName(),listItem.getTime(),date);
                     i++;
                 }
 
@@ -106,7 +107,7 @@ public class SundayUpdate extends AppCompatActivity {
 
                     Log.e("Size",i.toString());
                     UpdateListType listItem =(UpdateListType) list.getItemAtPosition(i);
-                    absent(listItem.getName(),listItem.getTime());
+                    absent(SundayUpdate.this,listItem.getName(),listItem.getTime(),date);
                     i++;
                 }
 
@@ -126,7 +127,7 @@ public class SundayUpdate extends AppCompatActivity {
 
                     Log.e("Size",i.toString());
                     UpdateListType listItem =(UpdateListType) list.getItemAtPosition(i);
-                    cancel(listItem.getName(),listItem.getTime());
+                    cancel(SundayUpdate.this,listItem.getName(),listItem.getTime(),date);
                     i++;
                 }
 
@@ -645,8 +646,8 @@ public class SundayUpdate extends AppCompatActivity {
     }
 
 
-    public void present(String subjectname,String subjecttime){
-        SQLiteDatabase am=openOrCreateDatabase("am",android.content.Context.MODE_PRIVATE,null);
+    public static void present(Context context,String subjectname,String subjecttime,String date){
+        SQLiteDatabase am=context.openOrCreateDatabase("am",android.content.Context.MODE_PRIVATE,null);
         String query="select * from '"+subjectname+"' where date=='"+date+"' and time=='"+subjecttime+"'";
         Cursor cursor=am.rawQuery(query,null);
         if(cursor.getCount()>0)
@@ -723,13 +724,12 @@ public class SundayUpdate extends AppCompatActivity {
                 am.execSQL("update subjects set per='"+pers+"' where name=='"+subjectname+"'");
             }
         }
-        Toast.makeText(SundayUpdate.this, "Classes Stat changed to PRESENT", Toast.LENGTH_SHORT).show();
-        viewData();
+        Toast.makeText(context, "Class Stat changed to PRESENT", Toast.LENGTH_SHORT).show();
 
     }
 
-    public void absent(String subjectname,String subjecttime){
-        SQLiteDatabase am=openOrCreateDatabase("am",android.content.Context.MODE_PRIVATE,null);
+    public static void absent(Context context,String subjectname,String subjecttime,String date){
+        SQLiteDatabase am=context.openOrCreateDatabase("am",android.content.Context.MODE_PRIVATE,null);
         String query="select * from '"+subjectname+"' where date=='"+date+"' and time=='"+subjecttime+"'";
         Cursor cursor=am.rawQuery(query,null);
         if(cursor.getCount()>0)
@@ -804,14 +804,13 @@ public class SundayUpdate extends AppCompatActivity {
                 am.execSQL("update subjects set per='"+pers+"' where name=='"+subjectname+"'");
             }
         }
-        Toast.makeText(SundayUpdate.this, "Classes Stat changed to ABSENT", Toast.LENGTH_SHORT).show();
-        viewData();
+        Toast.makeText(context, "Class Stat changed to ABSENT", Toast.LENGTH_SHORT).show();
 
     }
 
-    public void cancel(String subjectname,String subjecttime){
+    public static void cancel(Context context,String subjectname,String subjecttime,String date){
 
-        SQLiteDatabase am=openOrCreateDatabase("am",android.content.Context.MODE_PRIVATE,null);
+        SQLiteDatabase am=context.openOrCreateDatabase("am",android.content.Context.MODE_PRIVATE,null);
         String query="select * from '"+subjectname+"' where date=='"+date+"' and time=='"+subjecttime+"'";
         Cursor cursor=am.rawQuery(query,null);
         if(cursor.getCount()>0)
@@ -884,8 +883,8 @@ public class SundayUpdate extends AppCompatActivity {
             String query1="select * from subjects where name=='"+subjectname+"'";
             Cursor cursor1=am.rawQuery(query1,null);
         }
-        Toast.makeText(SundayUpdate.this, "Classes Stat changed to CANCELLED", Toast.LENGTH_SHORT).show();
-        viewData();
+        Toast.makeText(context, "Class Stat changed to CANCELLED", Toast.LENGTH_SHORT).show();
+
 
     }
 

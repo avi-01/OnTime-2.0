@@ -1,5 +1,6 @@
 package com.example.avnis.ontime;
 
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
 
@@ -7,6 +8,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
@@ -24,10 +27,15 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG= "MainActivity";
     CardView c1,c2,c3,c4,c5,c6;
     public static String todayString;
+    public static String CHANNEL_1_ID  = "reminder";
+    public static String CHANNEL_2_ID  = "update";
+    public static int id = 1;
+    public static int IntentId = 2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        createNotificationChannel();
 
 
         SQLiteDatabase am=openOrCreateDatabase("am",MODE_PRIVATE,null);
@@ -231,15 +239,35 @@ public class MainActivity extends AppCompatActivity {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            CharSequence name = "Reminder";
+            String description = "Notify classes";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_1_ID, name, importance);
             channel.setDescription(description);
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
+
+
+            CharSequence name2 = "Update";
+            String description2 = "Notify to update classes attendance";
+            int importance2 = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel2 = new NotificationChannel(CHANNEL_2_ID, name2, importance2);
+            channel2.setDescription(description2);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            notificationManager.createNotificationChannel(channel2);
+        }
+    }
+
+    public static class NotificationID {
+        public static int getID() {
+            Date now = new Date();
+            int id = Integer.parseInt(new SimpleDateFormat("ddHHSS",  Locale.US).format(now));
+            id +=(int) (Calendar.getInstance().getTimeInMillis()%10000000);
+            id%=1000000007;
+            return id;
         }
     }
 

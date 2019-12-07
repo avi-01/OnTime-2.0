@@ -1,16 +1,21 @@
 package com.example.avnis.ontime;
 
+import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,8 +27,11 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TimePicker;
 import android.widget.Toast;
-
 import java.util.ArrayList;
+import java.util.Calendar;
+
+import static android.content.Context.ALARM_SERVICE;
+import static java.util.Calendar.*;
 
 /**
  * Created by avnis on 7/6/2019.
@@ -127,7 +135,84 @@ public class AddSubjectTime extends DialogFragment {
 //                            ((Monday) getParentFragment()).viewData();
 
                             getDialog().dismiss();
+
+                            
+                            int day = SATURDAY;
+
+                            if(myStr=="sunday") {
+                                day = SUNDAY;
+                            }
+                            else if(myStr=="monday") {
+                                day = MONDAY;
+                            }
+                            else if(myStr=="tuesday") {
+                                day = TUESDAY;
+                            }
+                            else if(myStr=="wednesday") {
+                                day = WEDNESDAY;
+                            }
+                            else if(myStr=="thursday") {
+                                day = THURSDAY;
+                            }
+                            else if(myStr=="friday") {
+                                day = FRIDAY;
+                            }
+                            else if(myStr=="saturday") {
+                                day = SATURDAY;
+                            }
+                            System.out.println(day);
+
+                            Calendar date1 = Calendar.getInstance();
+                            while (date1.get(Calendar.DAY_OF_WEEK) != day) {
+                                date1.add(DATE, 1);
+                            }
+
+                            System.out.println(Calendar.getInstance()+" "+ date1);
+
+                            String[] time_A = times.split(":");
+                            long time = date1.getTimeInMillis() + ((Long.parseLong(time_A[0])*60 + Long.parseLong(time_A[1]))*60)*1000 - ((date1.get(HOUR_OF_DAY)*60 + date1.get(Calendar.MINUTE))*60)*1000;
+                            System.out.println(System.currentTimeMillis() +" "+time+"   "+Long.parseLong(time_A[0])+" "+Long.parseLong(time_A[1])+"   "+date1.get(HOUR_OF_DAY)+" "+date1.get(Calendar.MINUTE));
+                            System.out.println(((Long.parseLong(time_A[0])*60 + Long.parseLong(time_A[1]))*60)*1000 +"  "+((date1.get(HOUR_OF_DAY)*60 + date1.get(MINUTE))*60)*1000);
+
+                            if(time < System.currentTimeMillis())
+                            {
+                                time = time + 7*24*60*60*1000 ;
+                            }
+
+                            System.out.println(System.currentTimeMillis() +" "+time);
+
+
+                            Intent intent = new Intent(getContext(), MyBroadcastReceiver.class);
+
+                            intent.putExtra("type","remind");
+                            intent.putExtra("name",subject);
+                            intent.putExtra("time",times);
+                            intent.putExtra("day",myStr);
+
+                            int id = MainActivity.NotificationID.getID();
+                            PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                                    getContext(),id ,intent, PendingIntent.FLAG_CANCEL_CURRENT|PendingIntent.FLAG_UPDATE_CURRENT);
+
+                            AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(ALARM_SERVICE);
+                            alarmManager.setExact(AlarmManager.RTC_WAKEUP, time + 0*1000,pendingIntent);
+
+
+                            Intent intent1 = new Intent(getContext(), MyBroadcastReceiver.class);
+                            int id1= MainActivity.NotificationID.getID();
+
+                            intent1.putExtra("type","update");
+                            intent1.putExtra("name",subject);
+                            intent1.putExtra("time",times);
+                            intent1.putExtra("day",myStr);
+
+                            PendingIntent pendingIntent1 = PendingIntent.getBroadcast(
+                                    getContext(), id1,intent1, PendingIntent.FLAG_CANCEL_CURRENT|PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+                            alarmManager.setExact(AlarmManager.RTC_WAKEUP, time + 4*1000,pendingIntent1);
+
                         }
+
                     }
                 }
             }
