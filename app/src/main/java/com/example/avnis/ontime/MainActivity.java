@@ -96,6 +96,9 @@ public class MainActivity extends AppCompatActivity {
 
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, time,pendingIntent1);
 
+            time = calTime.getTimeInMillis() + 19*60*60*1000 - (calTime.get(Calendar.HOUR_OF_DAY)*60 + calTime.get(Calendar.MINUTE))*60*1000;
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, time,pendingIntent1);
+
         }
 
 
