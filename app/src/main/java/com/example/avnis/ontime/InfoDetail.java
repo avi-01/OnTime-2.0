@@ -35,7 +35,7 @@ public class InfoDetail extends AppCompatActivity {
         header.setText(subject);
 
         SQLiteDatabase am=openOrCreateDatabase("am",MODE_PRIVATE,null);
-        String query= String.format("select * from %s", subject);
+        String query= String.format("select * from '%s'", subject);
         Cursor cursor=am.rawQuery(query,null);
         while(cursor.moveToNext())
         {

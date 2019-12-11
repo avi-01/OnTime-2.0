@@ -37,9 +37,11 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
         String day = "";
         day = intent.getStringExtra("day");
 
+        Log.e("Recevier","Recieved"+" "+day+" "+type);
+
         if(type.equals("day")){
 
-            Log.e("Type",type);
+            Log.e("Type",type+" "+System.currentTimeMillis());
 
             Intent intent1 = new Intent(context,MyBroadcastReceiver.class);
             intent1.putExtra("type", type);
@@ -60,10 +62,13 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
             {
                 String name = cursor.getString(1);
                 String time = cursor.getString(0);
+                Log.e("Stat",name+" "+time+" "+todayString);
                 String query1 = "select * from '"+name+"' where date='"+todayString+"' and time='"+time+"' ";
                 Cursor cursor1 = am.rawQuery(query1, null);
                 if(cursor1.getCount()==0)
                 {
+
+                    Log.e("Stat","inside");
                     NotificationCompat.Builder builder = new NotificationCompat.Builder(context, MainActivity.CHANNEL_3_ID)
                             .setSmallIcon(R.drawable.ic_launcher)
                             .setContentTitle("Update Class Status")

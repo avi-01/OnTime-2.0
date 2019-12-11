@@ -17,6 +17,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.util.Log;
@@ -40,66 +43,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         createNotificationChannel();
-
-
-        SQLiteDatabase am1=openOrCreateDatabase("am",MODE_PRIVATE,null);
-        am1.execSQL("create table if not exists notify(name varchar,val varchar)");
-        String query1 = ("select * from notify where name='dayNotify'");
-        Cursor cursor1 = am1.rawQuery(query1,null);
-        if(cursor1.getCount()==0)
-        {
-            Log.e("notify","Count = 0");
-
-            am1.execSQL("insert into notify values('dayNotify','1')");
-
-            Intent intent1 = new Intent(MainActivity.this, MyBroadcastReceiver.class);
-            int id1= MainActivity.NotificationID.getID();
-
-
-            Calendar calendar = Calendar.getInstance();
-            Integer Today = calendar.get(Calendar.DAY_OF_WEEK);
-            String DAY;
-            switch (Today) {
-                case Calendar.SUNDAY:
-                    DAY="sunday";
-                    break;
-                case Calendar.MONDAY:
-                    DAY="monday";
-                    break;
-                case Calendar.TUESDAY:
-                    DAY="tuesday";
-                    break;
-                case Calendar.WEDNESDAY:
-                    DAY="wednesday";
-                    break;
-                case Calendar.THURSDAY:
-                    DAY="thursday";
-                    break;
-                case Calendar.FRIDAY:
-                    DAY="friday";
-                    break;
-                case Calendar.SATURDAY:
-                    DAY="saturday";
-                    break;
-                default:
-                    throw new IllegalStateException("Unexpected value: " + Today);
-            }
-
-            intent1.putExtra("type","day");
-            intent1.putExtra("day",DAY);
-
-            PendingIntent pendingIntent1 = PendingIntent.getBroadcast(MainActivity.this, id1,intent1, 0);
-
-            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-            Calendar calTime = Calendar.getInstance();
-            long time = calTime.getTimeInMillis() + 21*60*60*1000 - (calTime.get(Calendar.HOUR_OF_DAY)*60 + calTime.get(Calendar.MINUTE))*60*1000;
-
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, time,pendingIntent1);
-
-            time = calTime.getTimeInMillis() + 19*60*60*1000 - (calTime.get(Calendar.HOUR_OF_DAY)*60 + calTime.get(Calendar.MINUTE))*60*1000;
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, time,pendingIntent1);
-
-        }
 
 
 

@@ -42,6 +42,83 @@ public class Subject extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_subject);
+
+
+
+        SQLiteDatabase am1=openOrCreateDatabase("am",MODE_PRIVATE,null);
+        am1.execSQL("create table if not exists notify(name varchar,val varchar)");
+        String query1 = ("select * from notify where name='dayNotify'");
+        Cursor cursor1 = am1.rawQuery(query1,null);
+
+        Log.e("notify",cursor1.getCount()+"");
+        if(cursor1.getCount()==0)
+        {
+            Log.e("notify","Count = 0");
+
+            am1.execSQL("insert into notify values('dayNotify','1')");
+
+            Intent intent1 = new Intent(Subject.this, MyBroadcastReceiver.class);
+            int id1= MainActivity.NotificationID.getID();
+
+
+            Calendar calendar = Calendar.getInstance();
+            Integer Today = calendar.get(Calendar.DAY_OF_WEEK);
+            String DAY;
+            switch (Today) {
+                case Calendar.SUNDAY:
+                    DAY="sunday";
+                    break;
+                case Calendar.MONDAY:
+                    DAY="monday";
+                    break;
+                case Calendar.TUESDAY:
+                    DAY="tuesday";
+                    break;
+                case Calendar.WEDNESDAY:
+                    DAY="wednesday";
+                    break;
+                case Calendar.THURSDAY:
+                    DAY="thursday";
+                    break;
+                case Calendar.FRIDAY:
+                    DAY="friday";
+                    break;
+                case Calendar.SATURDAY:
+                    DAY="saturday";
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + Today);
+            }
+
+            intent1.putExtra("type","day");
+            intent1.putExtra("day",DAY);
+
+
+            PendingIntent pendingIntent1 = PendingIntent.getBroadcast(Subject.this, id1,intent1, 0);
+
+            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+            Calendar calTime = Calendar.getInstance();
+            long time = calTime.getTimeInMillis() + 21*60*60*1000 - (calTime.get(Calendar.HOUR_OF_DAY)*60 + calTime.get(Calendar.MINUTE))*60*1000;
+//            long time = System.currentTimeMillis() + 5*1000;
+
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, time,pendingIntent1);
+
+            Log.e("DOne","done"+" "+time+" "+System.currentTimeMillis());
+
+            long time1 = calTime.getTimeInMillis() + 19*60*60*1000 - (calTime.get(Calendar.HOUR_OF_DAY)*60 + calTime.get(Calendar.MINUTE))*60*1000;
+//            long time1= System.currentTimeMillis() + 10*1000;
+
+            Intent intent2 = new Intent(Subject.this, MyBroadcastReceiver.class);
+            intent2.putExtra("type","day");
+            intent2.putExtra("day",DAY);
+
+            PendingIntent pendingIntent2 = PendingIntent.getBroadcast(Subject.this, MainActivity.NotificationID.getID(),intent2, 0);
+            AlarmManager alarmManager1 = (AlarmManager) getSystemService(ALARM_SERVICE);
+            alarmManager1.setExact(AlarmManager.RTC_WAKEUP, time1,pendingIntent2);
+
+        }
+
+
         SQLiteDatabase am=openOrCreateDatabase("am",MODE_PRIVATE,null);
         am.execSQL("create table if not exists subjects(name varchar,tc int,ac int,per int)");
         add=(Button)findViewById(R.id.button);
