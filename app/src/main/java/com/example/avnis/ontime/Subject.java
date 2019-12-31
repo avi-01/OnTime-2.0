@@ -26,8 +26,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 
 
 public class Subject extends AppCompatActivity {
@@ -43,80 +46,20 @@ public class Subject extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_subject);
 
+//        Intent intent3 = new Intent(Subject.this, MyBroadcastReceiver.class);
+//        intent3.putExtra("type","day");
+//        intent3.putExtra("day","thursday");
+//
+//        PendingIntent pendingIntent3 = PendingIntent.getBroadcast(Subject.this, MainActivity.NotificationID.getID(),intent3, 0);
+//        AlarmManager alarmManager3 = (AlarmManager) getSystemService(ALARM_SERVICE);
+//
+//        alarmManager3.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5*1000,pendingIntent3);
 
+//        Calendar calTime1 = Calendar.getInstance();
+//        long time3 = calTime1.getTimeInMillis() + 21*60*60*1000 - (calTime1.get(Calendar.HOUR_OF_DAY)*60 + calTime1.get(Calendar.MINUTE))*60*1000;
+//
+//        Log.e("DATE",getDate(time3, "dd/MM/yyyy HH:mm:ss.SSS"));
 
-        SQLiteDatabase am1=openOrCreateDatabase("am",MODE_PRIVATE,null);
-        am1.execSQL("create table if not exists notify(name varchar,val varchar)");
-        String query1 = ("select * from notify where name='dayNotify'");
-        Cursor cursor1 = am1.rawQuery(query1,null);
-
-        Log.e("notify",cursor1.getCount()+"");
-        if(cursor1.getCount()==0)
-        {
-            Log.e("notify","Count = 0");
-
-            am1.execSQL("insert into notify values('dayNotify','1')");
-
-            Intent intent1 = new Intent(Subject.this, MyBroadcastReceiver.class);
-            int id1= MainActivity.NotificationID.getID();
-
-
-            Calendar calendar = Calendar.getInstance();
-            Integer Today = calendar.get(Calendar.DAY_OF_WEEK);
-            String DAY;
-            switch (Today) {
-                case Calendar.SUNDAY:
-                    DAY="sunday";
-                    break;
-                case Calendar.MONDAY:
-                    DAY="monday";
-                    break;
-                case Calendar.TUESDAY:
-                    DAY="tuesday";
-                    break;
-                case Calendar.WEDNESDAY:
-                    DAY="wednesday";
-                    break;
-                case Calendar.THURSDAY:
-                    DAY="thursday";
-                    break;
-                case Calendar.FRIDAY:
-                    DAY="friday";
-                    break;
-                case Calendar.SATURDAY:
-                    DAY="saturday";
-                    break;
-                default:
-                    throw new IllegalStateException("Unexpected value: " + Today);
-            }
-
-            intent1.putExtra("type","day");
-            intent1.putExtra("day",DAY);
-
-
-            PendingIntent pendingIntent1 = PendingIntent.getBroadcast(Subject.this, id1,intent1, 0);
-
-            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-            Calendar calTime = Calendar.getInstance();
-            long time = calTime.getTimeInMillis() + 21*60*60*1000 - (calTime.get(Calendar.HOUR_OF_DAY)*60 + calTime.get(Calendar.MINUTE))*60*1000;
-//            long time = System.currentTimeMillis() + 5*1000;
-
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, time,pendingIntent1);
-
-            Log.e("DOne","done"+" "+time+" "+System.currentTimeMillis());
-
-            long time1 = calTime.getTimeInMillis() + 19*60*60*1000 - (calTime.get(Calendar.HOUR_OF_DAY)*60 + calTime.get(Calendar.MINUTE))*60*1000;
-//            long time1= System.currentTimeMillis() + 10*1000;
-
-            Intent intent2 = new Intent(Subject.this, MyBroadcastReceiver.class);
-            intent2.putExtra("type","day");
-            intent2.putExtra("day",DAY);
-
-            PendingIntent pendingIntent2 = PendingIntent.getBroadcast(Subject.this, MainActivity.NotificationID.getID(),intent2, 0);
-            AlarmManager alarmManager1 = (AlarmManager) getSystemService(ALARM_SERVICE);
-            alarmManager1.setExact(AlarmManager.RTC_WAKEUP, time1,pendingIntent2);
-
-        }
 
 
         SQLiteDatabase am=openOrCreateDatabase("am",MODE_PRIVATE,null);
@@ -161,54 +104,51 @@ public class Subject extends AppCompatActivity {
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String cname = change.getText().toString();
-                if(cname.equals(""))
-                {
-                    Toast.makeText(Subject.this, "Enter the name", Toast.LENGTH_SHORT).show();
-                }
-                SQLiteDatabase am=openOrCreateDatabase("am",MODE_PRIVATE,null);
-                String name=list.getItemAtPosition(i).toString();
-                am.execSQL("update subjects  set name='"+cname+"' where name=='"+name+"'");
-                for(int i=0;i<7;i++)
-                {
-                    String lday = "";
-                    if(i==0)
-                    {
-                        lday= "sunday";
+                try {
+                    String cname = change.getText().toString();
+                    if (cname.equals("")) {
+                        Toast.makeText(Subject.this, "Enter the name", Toast.LENGTH_SHORT).show();
                     }
-                    else if(i==1)
+                    SQLiteDatabase am = openOrCreateDatabase("am", MODE_PRIVATE, null);
+                    String name = list.getItemAtPosition(i).toString();
+                    String query="select * from subjects where name=='"+cname+"'";
+                    Cursor cursor=am.rawQuery(query,null);
+                    if(cursor.getCount()>0)
                     {
-                        lday="monday";
+                        Toast.makeText(Subject.this, "Subject Already Exits", Toast.LENGTH_SHORT).show();
+                        return;
                     }
-                    else if(i==2)
-                    {
-                        lday="wednesday";
-                    }
-                    else if(i==3)
-                    {
-                        lday="thursday";
-                    }
-                    else if(i==4)
-                    {
-                        lday="friday";
-                    }
-                    else if(i==5)
-                    {
-                        lday="saturday";
-                    }
-                    else if(i==6)
-                    {
-                        lday="tuesday";
-                    }
-                    am.execSQL("update '"+lday+"' set name='"+cname+"' where name=='"+name+"'");
+                    am.execSQL("update subjects  set name='" + cname + "' where name=='" + name + "'");
+                    for (int i = 0; i < 7; i++) {
+                        String lday = "";
+                        if (i == 0) {
+                            lday = "sunday";
+                        } else if (i == 1) {
+                            lday = "monday";
+                        } else if (i == 2) {
+                            lday = "wednesday";
+                        } else if (i == 3) {
+                            lday = "thursday";
+                        } else if (i == 4) {
+                            lday = "friday";
+                        } else if (i == 5) {
+                            lday = "saturday";
+                        } else if (i == 6) {
+                            lday = "tuesday";
+                        }
+                        am.execSQL("update '" + lday + "' set name='" + cname + "' where name=='" + name + "'");
 
-                }
+                    }
 
-                am.execSQL("update extra set name='"+cname+"' where name=='"+name+"'");
-                am.execSQL("ALTER TABLE '"+name+"' RENAME TO '"+cname+"'");
-                listItem.clear();
-                viewData();
-                md1.dismiss();
+                    am.execSQL("update extra set name='" + cname + "' where name=='" + name + "'");
+                    am.execSQL("ALTER TABLE '" + name + "' RENAME TO '" + cname + "'");
+                    listItem.clear();
+                    viewData();
+                    md1.dismiss();
+                }catch (Exception e)
+                {
+                    Log.e("EXCEPTION", "onClick: " + e);
+                }
             }
         });
         close1.setOnClickListener(new View.OnClickListener() {
@@ -218,6 +158,7 @@ public class Subject extends AppCompatActivity {
             }
         });
     }
+
 
     private void removeData(AdapterView<?> adapterView, View view, final int i) {
         md2.setContentView(R.layout.activity_remove_subject);
@@ -370,5 +311,16 @@ public class Subject extends AppCompatActivity {
 
             }
         });
+    }
+
+    public static String getDate(long milliSeconds, String dateFormat)
+    {
+        // Create a DateFormatter object for displaying date in specified format.
+        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(milliSeconds);
+        return formatter.format(calendar.getTime());
     }
 }

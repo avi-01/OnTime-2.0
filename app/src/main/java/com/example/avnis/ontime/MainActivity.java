@@ -28,11 +28,22 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import static java.util.Calendar.DATE;
+import static java.util.Calendar.FRIDAY;
+import static java.util.Calendar.HOUR_OF_DAY;
+import static java.util.Calendar.MINUTE;
+import static java.util.Calendar.MONDAY;
+import static java.util.Calendar.SATURDAY;
+import static java.util.Calendar.SUNDAY;
+import static java.util.Calendar.THURSDAY;
+import static java.util.Calendar.TUESDAY;
+import static java.util.Calendar.WEDNESDAY;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG= "MainActivity";
     CardView c1,c2,c3,c4,c5,c6;
-    public static String todayString;
+    public String todayString;
     public static String CHANNEL_1_ID  = "reminder";
     public static String CHANNEL_2_ID  = "update";
     public static String CHANNEL_3_ID  = "dayReminder";
@@ -46,17 +57,19 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
         SQLiteDatabase am=openOrCreateDatabase("am",MODE_PRIVATE,null);
         am.execSQL("create table if not exists extra(date varchar,time varchar,name varchar)");
-        am.execSQL("create table if not exists monday(time varchar,name varchar,dur varchar)");
-        am.execSQL("create table if not exists tuesday(time varchar,name varchar,dur varchar)");
-        am.execSQL("create table if not exists wednesday(time varchar,name varchar,dur varchar)");
-        am.execSQL("create table if not exists friday(time varchar,name varchar,dur varchar)");
-        am.execSQL("create table if not exists thursday(time varchar,name varchar,dur varchar)");
-        am.execSQL("create table if not exists saturday(time varchar,name varchar,dur varchar)");
-        am.execSQL("create table if not exists sunday(time varchar,name varchar,dur varchar)");
+        am.execSQL("create table if not exists monday(time varchar,name varchar,dur varchar,id_remind varchar,id_update varchar)");
+        am.execSQL("create table if not exists tuesday(time varchar,name varchar,dur varchar,id_remind varchar,id_update varchar)");
+        am.execSQL("create table if not exists wednesday(time varchar,name varchar,dur varchar,id_remind varchar,id_update varchar)");
+        am.execSQL("create table if not exists friday(time varchar,name varchar,dur varchar,id_remind varchar,id_update varchar)");
+        am.execSQL("create table if not exists thursday(time varchar,name varchar,dur varchar,id_remind varchar,id_update varchar)");
+        am.execSQL("create table if not exists saturday(time varchar,name varchar,dur varchar,id_remind varchar,id_update varchar)");
+        am.execSQL("create table if not exists sunday(time varchar,name varchar,dur varchar,id_remind varchar,id_update varchar)");
         am.execSQL("create table if not exists subjects(name varchar,tc int,ac int,per int)");
 //        am.execSQL("insert into monday values('4:20','name','2')");
+
         c1=(CardView)findViewById(R.id.card_view1);
         c2=(CardView)findViewById(R.id.card_view2);
         c3=(CardView)findViewById(R.id.card_view3);
@@ -241,6 +254,189 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        checkNotification();
+    }
+
+    private void checkNotification() {
+
+        checkForEachday("monday", MONDAY);
+        checkForEachday("tuesday", TUESDAY);
+        checkForEachday("wednesday", WEDNESDAY);
+        checkForEachday("thursday", THURSDAY);
+        checkForEachday("friday", FRIDAY);
+        checkForEachday("saturday", SATURDAY);
+        checkForEachday("sunday", SUNDAY);
+        checkForDailyAlarm();
+    }
+
+    private void checkForDailyAlarm() {
+
+        SQLiteDatabase am1=openOrCreateDatabase("am",MODE_PRIVATE,null);
+        am1.execSQL("create table if not exists notify(name varchar,val varchar, val1 varchar)");
+        String query1 = ("select * from notify where name='dayNotify'");
+        Cursor cursor1 = am1.rawQuery(query1,null);
+        int id1;
+        int id2;
+
+        Log.e("notify",cursor1.getCount()+"");
+        if(!cursor1.moveToNext())
+        {
+            id1= NotificationID.getID();
+            id2= NotificationID.getID()+1;
+            am1.execSQL("insert into notify values('dayNotify','"+id1+"','"+id2+"')");
+        }
+        else {
+            id1= cursor1.getInt(1);
+            id2= cursor1.getInt(2);
+        }
+
+            Log.e("notify","Count = 0");
+
+            Intent intent1 = new Intent(MainActivity.this, MyBroadcastReceiver.class);
+
+
+            Calendar calendar = Calendar.getInstance();
+            Integer Today = calendar.get(Calendar.DAY_OF_WEEK);
+            String DAY;
+            switch (Today) {
+                case Calendar.SUNDAY:
+                    DAY="sunday";
+                    break;
+                case Calendar.MONDAY:
+                    DAY="monday";
+                    break;
+                case Calendar.TUESDAY:
+                    DAY="tuesday";
+                    break;
+                case Calendar.WEDNESDAY:
+                    DAY="wednesday";
+                    break;
+                case Calendar.THURSDAY:
+                    DAY="thursday";
+                    break;
+                case Calendar.FRIDAY:
+                    DAY="friday";
+                    break;
+                case Calendar.SATURDAY:
+                    DAY="saturday";
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + Today);
+            }
+            Calendar calTime = Calendar.getInstance();
+            long time = calTime.getTimeInMillis() + 21*60*60*1000 - (calTime.get(Calendar.HOUR_OF_DAY)*60 + calTime.get(Calendar.MINUTE))*60*1000;
+
+
+
+            long time1 = calTime.getTimeInMillis() + 19*60*60*1000 - (calTime.get(Calendar.HOUR_OF_DAY)*60 + calTime.get(Calendar.MINUTE))*60*1000;
+//            long time1= System.currentTimeMillis() + 10*1000;
+
+            Log.e(TAG, "checkForDailyAlarm: "+time+" "+time1 );
+
+            if(time1<System.currentTimeMillis())
+            {
+                time1 = time1 + 24*60*60*1000;
+                time = time + 24*60*60*1000;
+            }
+
+            intent1.putExtra("type","day");
+            intent1.putExtra("day",DAY);
+            intent1.putExtra("alarm_time",time);
+
+
+            PendingIntent pendingIntent1 = PendingIntent.getBroadcast(MainActivity.this, id1,intent1, 0);
+
+            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+
+            Intent intent2 = new Intent(MainActivity.this, MyBroadcastReceiver.class);
+            intent2.putExtra("type","day");
+            intent2.putExtra("day",DAY);
+            intent2.putExtra("alarm_time",time1);
+
+            PendingIntent pendingIntent2 = PendingIntent.getBroadcast(MainActivity.this, id2 ,intent2, 0);
+            AlarmManager alarmManager1 = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+
+            alarmManager1.setExact(AlarmManager.RTC_WAKEUP, time1,pendingIntent2);
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, time,pendingIntent1);
+
+
+            Log.e("DOne","done"+" "+time+" "+time1+" "+System.currentTimeMillis());
+
+    }
+
+    private void checkForEachday(String subjectDay, int day) {
+
+
+        SQLiteDatabase am = openOrCreateDatabase("am",MODE_PRIVATE,null);
+        Cursor cursor = am.rawQuery("select * from '"+subjectDay+"'",null);
+
+        Calendar date1 = Calendar.getInstance();
+        while (date1.get(Calendar.DAY_OF_WEEK) != day) {
+            date1.add(DATE, 1);
+        }
+
+        System.out.println(Calendar.getInstance()+" "+ date1);
+
+
+        while(cursor.moveToNext())
+        {
+            String times=cursor.getString(0);
+            String name =cursor.getString(1);
+            String dur=cursor.getString(2);
+            Integer id_remind= Integer.valueOf(cursor.getString(3));
+            Integer id_update= Integer.valueOf(cursor.getString(4));
+
+            String[] time_A = times.split(":");
+            long time = date1.getTimeInMillis() + ((Long.parseLong(time_A[0])*60 + Long.parseLong(time_A[1]))*60)*1000 - ((date1.get(HOUR_OF_DAY)*60 + date1.get(Calendar.MINUTE))*60)*1000;
+            System.out.println(System.currentTimeMillis() +" "+time+"   "+Long.parseLong(time_A[0])+" "+Long.parseLong(time_A[1])+"   "+date1.get(HOUR_OF_DAY)+" "+date1.get(Calendar.MINUTE));
+            System.out.println(((Long.parseLong(time_A[0])*60 + Long.parseLong(time_A[1]))*60)*1000 +"  "+((date1.get(HOUR_OF_DAY)*60 + date1.get(MINUTE))*60)*1000);
+
+            if(time - 30*60*1000 < System.currentTimeMillis())
+            {
+                time = time + 7*24*60*60*1000 ;
+            }
+
+            Intent intent = new Intent(MainActivity.this, MyBroadcastReceiver.class);
+
+            intent.putExtra("type","remind");
+            intent.putExtra("name",name);
+            intent.putExtra("time",times);
+            intent.putExtra("day",subjectDay);
+            intent.putExtra("id",id_remind);
+            intent.putExtra("alarm_time",time - 30*60*1000);
+            Log.e(TAG, "checkForEachday: "+(time - 30*60*1000) );
+
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                    MainActivity.this,id_remind ,intent, PendingIntent.FLAG_CANCEL_CURRENT|PendingIntent.FLAG_UPDATE_CURRENT);
+
+            AlarmManager alarmManager = (AlarmManager) MainActivity.this.getSystemService(ALARM_SERVICE);
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, time - 30*60*1000,pendingIntent);
+
+
+            Intent intent1 = new Intent(MainActivity.this, MyBroadcastReceiver.class);
+
+            intent1.putExtra("type","update");
+            intent1.putExtra("name",name);
+            intent1.putExtra("time",times);
+            intent1.putExtra("day",subjectDay);
+            intent1.putExtra("id",id_update);
+            intent1.putExtra("alarm_time",time + 30*60*1000);
+
+            PendingIntent pendingIntent1 = PendingIntent.getBroadcast(
+                    MainActivity.this, id_update,intent1, PendingIntent.FLAG_CANCEL_CURRENT|PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, time + 30*60*1000,pendingIntent1);
+
+        }
     }
 
     private void createNotificationChannel() {

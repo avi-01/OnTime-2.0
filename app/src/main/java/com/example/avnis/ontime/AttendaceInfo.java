@@ -109,6 +109,7 @@ public class AttendaceInfo extends AppCompatActivity {
             InfoType a = new InfoType(names, attes, mess, pers);
             listItem.add(a);
         }
+
 //        UpdateListType b=new UpdateListType("9:30","MATH","Attendance 0/0","You need to attend this class","75%","Present");
 //        listItem.add(b);
 //        UpdateListType c=new UpdateListType("7:30","MATH","Attendance 0/0","You need to attend this class","75%","Present");

@@ -130,8 +130,6 @@ public class AddSubjectTime extends DialogFragment {
                             Toast.makeText(getContext().getApplicationContext(), "Subject Already In the Timetable", Toast.LENGTH_SHORT).show();
                         }
                         else {
-                            am.execSQL("insert into '"+myStr+"' values('"+times+"','"+subject+"','"+durs+"')");
-                            Toast.makeText(getContext().getApplicationContext(),"Subject Added", Toast.LENGTH_SHORT).show();
 //                            ((Monday) getParentFragment()).viewData();
 
                             getDialog().dismiss();
@@ -181,6 +179,7 @@ public class AddSubjectTime extends DialogFragment {
 
                             System.out.println(System.currentTimeMillis() +" "+time);
 
+                            int id = MainActivity.NotificationID.getID();
 
                             Intent intent = new Intent(getContext(), MyBroadcastReceiver.class);
 
@@ -188,8 +187,9 @@ public class AddSubjectTime extends DialogFragment {
                             intent.putExtra("name",subject);
                             intent.putExtra("time",times);
                             intent.putExtra("day",myStr);
+                            intent.putExtra("id",id);
+                            intent.putExtra("alarm_time",(time - 30*60*1000));
 
-                            int id = MainActivity.NotificationID.getID();
                             PendingIntent pendingIntent = PendingIntent.getBroadcast(
                                     getContext(),id ,intent, PendingIntent.FLAG_CANCEL_CURRENT|PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -204,12 +204,20 @@ public class AddSubjectTime extends DialogFragment {
                             intent1.putExtra("name",subject);
                             intent1.putExtra("time",times);
                             intent1.putExtra("day",myStr);
+                            intent1.putExtra("id",id1);
+                            intent1.putExtra("alarm_time",(time + 30*60*1000));
 
                             PendingIntent pendingIntent1 = PendingIntent.getBroadcast(
                                     getContext(), id1,intent1, PendingIntent.FLAG_CANCEL_CURRENT|PendingIntent.FLAG_UPDATE_CURRENT);
 
 
                             alarmManager.setExact(AlarmManager.RTC_WAKEUP, time + 30*60*1000,pendingIntent1);
+
+
+
+                            am.execSQL("insert into '"+myStr+"' values('"+times+"','"+subject+"','"+durs+"','"+id+"','"+id1+"')");
+                            Toast.makeText(getContext().getApplicationContext(),"Subject Added", Toast.LENGTH_SHORT).show();
+                            Log.e(TAG, "onClick: "+id+ " " + id1+" "+subject+" "+times);
 
                         }
 
