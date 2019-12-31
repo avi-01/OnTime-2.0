@@ -57,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
         SQLiteDatabase am=openOrCreateDatabase("am",MODE_PRIVATE,null);
         am.execSQL("create table if not exists extra(date varchar,time varchar,name varchar)");
         am.execSQL("create table if not exists monday(time varchar,name varchar,dur varchar,id_remind varchar,id_update varchar)");
@@ -260,6 +259,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        SQLiteDatabase am1=openOrCreateDatabase("am",MODE_PRIVATE,null);
+        am1.execSQL("create table if not exists notify(name varchar,val varchar, val1 varchar)");
+        String query1 = ("select * from notify where name='dayNotify'");
+        Cursor cursor1 = am1.rawQuery(query1,null);
+
+
+        if(!cursor1.moveToNext())
+        {
+            Toast.makeText(this, "Open About Us for instructions", Toast.LENGTH_LONG).show();
+        }
         checkNotification();
     }
 
